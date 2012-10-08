@@ -63,7 +63,12 @@ public class SSOCookieServlet extends HttpServlet {
     private ClientProperties clientProperties;
     public static final String REDIRECT_ATTRIBUTE = "ssocookie.redirect";
 
-    public SSOCookieServlet(ApplicationService applicationService, ApplicationManager applicationManager, SecurityServerClient securityServerClient, TokenAuthenticationManager tokenAuthenticationManager, HttpAuthenticator httpAuthenticator, ClientProperties clientProperties) {
+  /**
+   * Whether to use the ClaimServlet (Nordunet-specific)
+   */
+  private boolean useClaimServlet = false;
+
+  public SSOCookieServlet(ApplicationService applicationService, ApplicationManager applicationManager, SecurityServerClient securityServerClient, TokenAuthenticationManager tokenAuthenticationManager, HttpAuthenticator httpAuthenticator, ClientProperties clientProperties) {
         this.applicationService = applicationService;
         this.applicationManager = applicationManager;
         this.securityServerClient = securityServerClient;
@@ -128,7 +133,7 @@ public class SSOCookieServlet extends HttpServlet {
             return;
         } catch (ApplicationAccessDeniedException e) {
             log.error(e);
-            errorPage(res, null);
+            errorPage(res, "access denied to application " + requestedApplicationName);
             return;
         } catch (InactiveAccountException e) {
             log.error("Account is inactive: " + e.getMessage());
@@ -165,7 +170,7 @@ public class SSOCookieServlet extends HttpServlet {
         } else {
             gotoUrl = res.encodeRedirectURL(referer);
         }
-        if (req.getSession().getAttribute("new.user") != null) {
+        if (useClaimServlet && req.getSession().getAttribute("new.user") != null) {
             if (log.isDebugEnabled()) {
                 log.debug("New user; redirecting to account claim servlet");
             }

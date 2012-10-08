@@ -5,9 +5,6 @@
         <vendor name="${project.organization.name}" url="${project.organization.url}" />
     </plugin-info>
 
-  <component-import
-      key="settingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
-
     <servlet name="ssocookie" class="net.nordu.crowd.sso.SSOCookieServlet" key="ssocookie">
         <url-pattern>/ssocookie</url-pattern>
     </servlet>
